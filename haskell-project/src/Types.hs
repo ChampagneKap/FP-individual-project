@@ -7,9 +7,7 @@ module Types (
 
 data User = User {
     userID :: Int,
-    username :: String,
-    msgSent :: String,
-    msgReceived :: String
+    username :: String
 } deriving (Show, Eq)
 
 data Message = Message {
