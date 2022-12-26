@@ -5,6 +5,7 @@ import Types
 
 import Control.Concurrent
 import System.Random
+import Database.SQLite.Simple
 
 createUser :: Int -> User
 createUser n = User n "User" (show n)
@@ -29,17 +30,24 @@ chooseRandomMsg = do
     let randomMsg = msgs!!n
     return randomMsg
 
+threadProcess :: Connection -> [User] -> MVar User -> IO ()
+threadProcess conn users userFromBox = do
+    userFrom <- takeMVar userFromBox
+    print userFrom
+    generateRandomTimeInterval
+    userTo <- chooseRandomUser userFrom users
+    print userTo
+    msg <- chooseRandomMsg
+    print msg
+    saveMessage conn msg userFrom userTo
+    putMVar userFromBox userFrom
+
 main :: IO ()
 main = do
     putStrLn "START"
     conn <- initialiseDB
     let users = map createUser [1..10]
-    saveUsers conn users
-
-    generateRandomTimeInterval
-    let userFrom = head users
-    userTo <- chooseRandomUser userFrom users
-    msg <- chooseRandomMsg
-
-    saveMessage conn msg userFrom userTo
+    let user = head users
+    userFromBox <- newMVar user
+    forkIO (threadProcess conn users userFromBox)
     putStrLn "FINISH"
