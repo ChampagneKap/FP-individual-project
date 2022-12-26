@@ -3,11 +3,13 @@
 module Database (
     initialiseDB,
     createUserInDB,
-    saveUsers
+    saveUsers,
+    saveMessage
 ) where
 
 import Types
 import Database.SQLite.Simple
+import Database.SQLite.Simple.ToField
 
 initialiseDB :: IO Connection
 initialiseDB = do
@@ -33,3 +35,9 @@ createUserInDB conn user = do
 
 saveUsers :: Connection -> [User] -> IO ()
 saveUsers conn = mapM_ (createUserInDB conn)
+
+saveMessage :: Connection -> String -> User -> User -> IO ()
+saveMessage conn msg userFrom userTo = do
+    let userFromID = userID userFrom
+    let userToID = userID userTo
+    execute conn "INSERT INTO messages (content, userFrom, userTo) VALUES (?, ?, ?)" (msg, userFromID, userToID)
