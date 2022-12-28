@@ -18,6 +18,7 @@ initialiseDB = do
             \userFrom INTEGER DEFAULT NULL, \
             \userTo INTEGER DEFAULT NULL \
             \)"
+        execute_ conn "DELETE FROM messages"
         return conn
 
 saveMessage :: Connection -> Message -> IO ()
