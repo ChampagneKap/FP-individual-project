@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Database (
-    initialiseDB
-    -- saveMessage,
+    initialiseDB,
+    saveMessage
 ) where
 
 import Types
@@ -20,9 +20,9 @@ initialiseDB = do
             \)"
         return conn
 
--- saveMessage :: Connection -> Message -> IO ()
--- saveMessage conn message = do
---     let userFromID = userFrom message
---     let userToID = userTo message
---     let msg = msgContent message
---     execute conn "INSERT INTO messages (content, userFrom, userTo) VALUES (?, ?, ?)" (msg, userFromID, userToID)
+saveMessage :: Connection -> Message -> IO ()
+saveMessage conn message = do
+    let userFromID = userID (userFrom message)
+    let userToID = userID (userTo message)
+    let msg = msgContent message
+    execute conn "INSERT INTO messages (content, userFrom, userTo) VALUES (?, ?, ?)" (msg, userFromID, userToID)

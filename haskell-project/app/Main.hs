@@ -20,7 +20,8 @@ chooseRandomUser userFrom users = do
     let len = (length users) - 1
     n <- randomRIO (0, len) :: IO Int
     let randomUser = users!!n
-    if (userFrom /= randomUser) then return randomUser else chooseRandomUser userFrom users
+    if (userFrom /= randomUser) then return randomUser
+    else chooseRandomUser userFrom users
 
 chooseRandomMsg :: IO String
 chooseRandomMsg = do
@@ -29,15 +30,6 @@ chooseRandomMsg = do
     n <- randomRIO (0, len) :: IO Int
     let randomMsg = msgs!!n
     return randomMsg
-
--- createMessageToSend :: String -> User -> User -> Message
--- createMessageToSend msg userFrom userTo = Message msg userFrom userTo
-
--- sendMessage :: Connection -> MVar Message -> IO ()
--- sendMessage msgToSend = do
---     msg <- takeMVar msgToSend
---     if checkMessages then saveMessage conn msg
---     putMVar msgToSend msg
 
 updateMsgList :: [Message] -> Message -> [Message]
 updateMsgList [] msg = [msg]
@@ -49,24 +41,25 @@ threadProcess conn users userFrom msgsSent = do
     userTo <- chooseRandomUser userFrom users
     msgContent <- chooseRandomMsg
     let msg = Message msgContent userFrom userTo
-    print msg
-    listOfMsgs <- takeMVar msgsSent
-    print listOfMsgs
-    let listOfMsgs = updateMsgList listOfMsgs msg
-    print listOfMsgs
-    -- if (length listOfMsgs) < 100 then do
-    --     listOfMsgs <- updateMsgList listOfMsgs msg
-    --     print listOfMsgs
-    -- else do 
-    --     listOfMsgs <- listOfMsgs
-    --     print listOfMsgs
-    
-    putMVar msgsSent listOfMsgs
+    saveMessage conn msg
 
-spawnUserThreads :: Connection -> MVar [Message] -> [User] -> User -> IO ()
-spawnUserThreads conn msgsSent users userFrom = do
-    threadID <- forkIO (threadProcess conn users userFrom msgsSent)
-    print threadID
+    listOfMsgs <- tryTakeMVar msgsSent
+    case listOfMsgs of
+        Nothing -> do
+            let updatedList = updateMsgList [] msg
+            putMVar msgsSent updatedList
+            threadProcess conn users userFrom msgsSent
+        Just msgs -> do
+            if (length msgs) < 100 then do
+                let updatedList = updateMsgList msgs msg
+                putMVar msgsSent updatedList
+                threadProcess conn users userFrom msgsSent
+            else do
+                let updatedList = msgs
+                putMVar msgsSent updatedList
+
+spawnUserThreads :: Connection -> MVar [Message] -> [User] -> User -> IO ThreadId
+spawnUserThreads conn msgsSent users userFrom = forkIO (threadProcess conn users userFrom msgsSent)
 
 main :: IO ()
 main = do
@@ -75,4 +68,6 @@ main = do
     let users = map createUser [1..10]
     msgsSent <- newEmptyMVar
     mapM_ (spawnUserThreads conn msgsSent users) users
+    allMsgsSent <- takeMVar msgsSent
+    print allMsgsSent
     putStrLn "FINISH"
