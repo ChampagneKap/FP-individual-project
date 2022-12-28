@@ -12,7 +12,6 @@ data User = User {
 } deriving (Show, Eq)
 
 data Message = Message {
-    msgID :: Int,
     msgContent :: String,
     userFrom :: User,
     userTo :: User

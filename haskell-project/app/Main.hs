@@ -30,24 +30,49 @@ chooseRandomMsg = do
     let randomMsg = msgs!!n
     return randomMsg
 
-threadProcess :: Connection -> [User] -> MVar User -> IO ()
-threadProcess conn users userFromBox = do
-    userFrom <- takeMVar userFromBox
-    print userFrom
+-- createMessageToSend :: String -> User -> User -> Message
+-- createMessageToSend msg userFrom userTo = Message msg userFrom userTo
+
+-- sendMessage :: Connection -> MVar Message -> IO ()
+-- sendMessage msgToSend = do
+--     msg <- takeMVar msgToSend
+--     if checkMessages then saveMessage conn msg
+--     putMVar msgToSend msg
+
+updateMsgList :: [Message] -> Message -> [Message]
+updateMsgList [] msg = [msg]
+updateMsgList (m:ms) msg = (m:ms) ++ [msg]
+
+threadProcess :: Connection -> [User] -> User -> MVar [Message] -> IO ()
+threadProcess conn users userFrom msgsSent = do
     generateRandomTimeInterval
     userTo <- chooseRandomUser userFrom users
-    print userTo
-    msg <- chooseRandomMsg
+    msgContent <- chooseRandomMsg
+    let msg = Message msgContent userFrom userTo
     print msg
-    saveMessage conn msg userFrom userTo
-    putMVar userFromBox userFrom
+    listOfMsgs <- takeMVar msgsSent
+    print listOfMsgs
+    let listOfMsgs = updateMsgList listOfMsgs msg
+    print listOfMsgs
+    -- if (length listOfMsgs) < 100 then do
+    --     listOfMsgs <- updateMsgList listOfMsgs msg
+    --     print listOfMsgs
+    -- else do 
+    --     listOfMsgs <- listOfMsgs
+    --     print listOfMsgs
+    
+    putMVar msgsSent listOfMsgs
+
+spawnUserThreads :: Connection -> MVar [Message] -> [User] -> User -> IO ()
+spawnUserThreads conn msgsSent users userFrom = do
+    threadID <- forkIO (threadProcess conn users userFrom msgsSent)
+    print threadID
 
 main :: IO ()
 main = do
     putStrLn "START"
     conn <- initialiseDB
     let users = map createUser [1..10]
-    let user = head users
-    userFromBox <- newMVar user
-    forkIO (threadProcess conn users userFromBox)
+    msgsSent <- newEmptyMVar
+    mapM_ (spawnUserThreads conn msgsSent users) users
     putStrLn "FINISH"
