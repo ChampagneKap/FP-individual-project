@@ -4,18 +4,18 @@ module Database (
     initialiseDB,
     saveMessage,
     selectAllMessages,
-    selectAllMessagesByUser
+    selectAllMessagesByUser,
+    selectEachMessageSent
 ) where
 
 import Types
 import Database.SQLite.Simple
-import Database.SQLite.Simple.ToField
 
 initialiseDB :: IO Connection
 initialiseDB = do
         conn <- open "messages.sqlite"
         execute_ conn "CREATE TABLE IF NOT EXISTS messages (\
-            \id INTEGER PRIMARY KEY AUTOINCREMENT,\
+            \id INTEGER PRIMARY KEY,\
             \content VARCHAR(50) NOT NULL, \
             \userFrom INTEGER DEFAULT NULL, \
             \userTo INTEGER DEFAULT NULL \
@@ -38,6 +38,19 @@ selectAllMessages conn = do
 selectAllMessagesByUser :: Connection -> User -> IO ()
 selectAllMessagesByUser conn user = do
     let receivingUser = userID user
-    results <- query conn "SELECT * FROM messages WHERE userTo = ?" [receivingUser] :: IO [Message]
+    sentResults <- query conn "SELECT * FROM messages WHERE userFrom = ?" [receivingUser] :: IO [Message]
+    let numOfSentMsgs = length sentResults
+    receivedResults <- query conn "SELECT * FROM messages WHERE userTo = ?" [receivingUser] :: IO [Message]
+    let numOfReceivedMsgs = length receivedResults
+    putStrLn "------------------------------"
+    putStrLn ("User " ++ show receivingUser ++ " sent " ++ show numOfSentMsgs ++ " messages.")
+    putStrLn ("User " ++ show receivingUser ++ " received " ++ show numOfReceivedMsgs ++ " messages.")
+    putStrLn "------------------------------"
+
+selectEachMessageSent :: Connection -> String -> IO ()
+selectEachMessageSent conn msg = do
+    results <- query conn "SELECT * FROM messages WHERE content = ?" [msg] :: IO [Message]
     let numOfMsgs = length results
-    putStrLn ("User " ++ show receivingUser ++ " received " ++ show numOfMsgs ++ " messages.")
+    putStrLn "------------------------------"
+    putStrLn ("The message " ++  msg ++ " was sent " ++ show numOfMsgs ++ " times.")
+    putStrLn "------------------------------"

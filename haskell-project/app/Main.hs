@@ -12,7 +12,7 @@ createUser n = User n "User" (show n)
 
 generateRandomTimeInterval :: IO ()
 generateRandomTimeInterval = do
-    n <- randomRIO (50, 200) :: IO Int
+    n <- randomRIO (500, 5000) :: IO Int
     threadDelay n
 
 chooseRandomUser :: User -> [User] -> IO User
@@ -31,10 +31,6 @@ chooseRandomMsg = do
     let randomMsg = msgs!!n
     return randomMsg
 
-updateMsgList :: [Message] -> Message -> [Message]
-updateMsgList [] msg = [msg]
-updateMsgList (m:ms) msg = (m:ms) ++ [msg]
-
 sendMessage :: Connection -> [User] -> User -> IO Message
 sendMessage conn users userFrom = do
     userTo <- chooseRandomUser userFrom users
@@ -46,9 +42,10 @@ sendMessage conn users userFrom = do
 threadProcess :: Connection -> [User] -> User -> MVar Int -> MVar Message -> IO ()
 threadProcess conn users userFrom msgsSent msgBox = do
     generateRandomTimeInterval
+    msgSentBefore <- takeMVar msgBox
     numOfMsgs <- selectAllMessages conn
     if numOfMsgs < 100 then do
-        msgSentBefore <- takeMVar msgBox
+        -- msgSentBefore <- takeMVar msgBox
         msg <- sendMessage conn users userFrom
         putMVar msgBox msg
         threadProcess conn users userFrom msgsSent msgBox
@@ -69,5 +66,10 @@ main = do
     mapM_ (spawnUserThreads conn msgsSent msgBox users) users
     allMsgsSent <- takeMVar msgsSent
     putStrLn (show allMsgsSent ++ " messages sent between users.")
-    putStrLn "FINISH"
+    putStrLn "FINISHED"
+    putStrLn "=============================="
     mapM_ (selectAllMessagesByUser conn) users
+    putStrLn "=============================="
+    let msgs = ["hello", "cześć", "hola", "bonjour", "guten tag", "salve", "nǐn hǎo", "olá", "asalaam alaikum", "konnichiwa", "anyoung haseyo", "zdravstvuyte"]
+    mapM_ (selectEachMessageSent conn) msgs
+    putStrLn "=============================="
