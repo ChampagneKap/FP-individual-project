@@ -12,7 +12,8 @@ createUser n = User n "User" (show n)
 
 generateRandomTimeInterval :: IO ()
 generateRandomTimeInterval = do
-    n <- randomRIO (500000, 2000000) :: IO Int
+    n <- randomRIO (50, 200) :: IO Int
+    --print n
     threadDelay n
 
 chooseRandomUser :: User -> [User] -> IO User
@@ -35,39 +36,35 @@ updateMsgList :: [Message] -> Message -> [Message]
 updateMsgList [] msg = [msg]
 updateMsgList (m:ms) msg = (m:ms) ++ [msg]
 
-threadProcess :: Connection -> [User] -> User -> MVar [Message] -> IO ()
-threadProcess conn users userFrom msgsSent = do
+sendMessage :: Connection -> [User] -> User -> IO Message
+sendMessage conn users userFrom = do
     generateRandomTimeInterval
     userTo <- chooseRandomUser userFrom users
     msgContent <- chooseRandomMsg
     let msg = Message msgContent userFrom userTo
     saveMessage conn msg
+    return msg
 
-    listOfMsgs <- tryTakeMVar msgsSent
-    case listOfMsgs of
-        Nothing -> do
-            let updatedList = updateMsgList [] msg
-            putMVar msgsSent updatedList
-            threadProcess conn users userFrom msgsSent
-        Just msgs -> do
-            if (length msgs) < 100 then do
-                let updatedList = updateMsgList msgs msg
-                putMVar msgsSent updatedList
-                threadProcess conn users userFrom msgsSent
-            else do
-                let updatedList = msgs
-                putMVar msgsSent updatedList
+threadProcess :: Connection -> [User] -> User -> MVar [Message] -> [Message] -> IO ()
+threadProcess conn users userFrom msgsBox msgsSent = do
+    if (length msgsSent) < 100 then do
+        msg <- sendMessage conn users userFrom
+        let updatedList = updateMsgList msgsSent msg
+        threadProcess conn users userFrom msgsBox updatedList
+    else do
+        let updatedList = msgsSent
+        putMVar msgsBox updatedList
 
 spawnUserThreads :: Connection -> MVar [Message] -> [User] -> User -> IO ThreadId
-spawnUserThreads conn msgsSent users userFrom = forkIO (threadProcess conn users userFrom msgsSent)
+spawnUserThreads conn msgsSent users userFrom = forkIO (threadProcess conn users userFrom msgsSent [])
 
 main :: IO ()
 main = do
-    putStrLn "START"
+    putStrLn "START - sending messages between users..."
     conn <- initialiseDB
     let users = map createUser [1..10]
     msgsSent <- newEmptyMVar
     mapM_ (spawnUserThreads conn msgsSent users) users
     allMsgsSent <- takeMVar msgsSent
-    print allMsgsSent
+    print (length allMsgsSent)
     putStrLn "FINISH"
