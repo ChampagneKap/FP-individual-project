@@ -3,7 +3,8 @@
 module Database (
     initialiseDB,
     saveMessage,
-    selectAllMessages
+    selectAllMessages,
+    selectAllMessagesByUser
 ) where
 
 import Types
@@ -33,3 +34,10 @@ selectAllMessages :: Connection -> IO Int
 selectAllMessages conn = do
     results <- query_ conn "SELECT * FROM messages" :: IO [Message]
     return (length results)
+
+selectAllMessagesByUser :: Connection -> User -> IO ()
+selectAllMessagesByUser conn user = do
+    let receivingUser = userID user
+    results <- query conn "SELECT * FROM messages WHERE userTo = ?" [receivingUser] :: IO [Message]
+    let numOfMsgs = length results
+    putStrLn ("User " ++ show receivingUser ++ " received " ++ show numOfMsgs ++ " messages.")

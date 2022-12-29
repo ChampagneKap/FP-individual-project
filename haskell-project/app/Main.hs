@@ -37,7 +37,6 @@ updateMsgList (m:ms) msg = (m:ms) ++ [msg]
 
 sendMessage :: Connection -> [User] -> User -> IO Message
 sendMessage conn users userFrom = do
-    generateRandomTimeInterval
     userTo <- chooseRandomUser userFrom users
     msgContent <- chooseRandomMsg
     let msg = Message 0 msgContent (userID userFrom) (userID userTo)
@@ -46,6 +45,7 @@ sendMessage conn users userFrom = do
 
 threadProcess :: Connection -> [User] -> User -> MVar Int -> MVar Message -> IO ()
 threadProcess conn users userFrom msgsSent msgBox = do
+    generateRandomTimeInterval
     numOfMsgs <- selectAllMessages conn
     if numOfMsgs < 100 then do
         msgSentBefore <- takeMVar msgBox
@@ -70,3 +70,4 @@ main = do
     allMsgsSent <- takeMVar msgsSent
     putStrLn (show allMsgsSent ++ " messages sent between users.")
     putStrLn "FINISH"
+    mapM_ (selectAllMessagesByUser conn) users
