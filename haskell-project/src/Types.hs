@@ -5,6 +5,9 @@ module Types (
     Message (..)
 ) where
 
+import Database.SQLite.Simple.FromRow
+import Database.SQLite.Simple.ToRow
+
 data User = User {
     userID :: Int,
     firstName :: String,
@@ -12,7 +15,14 @@ data User = User {
 } deriving (Show, Eq)
 
 data Message = Message {
+    msgID :: Int,
     msgContent :: String,
-    userFrom :: User,
-    userTo :: User
+    userFrom :: Int,
+    userTo :: Int
 } deriving (Show, Eq)
+
+instance FromRow Message where
+    fromRow = Message <$> field <*> field <*> field <*> field
+
+instance ToRow Message where
+    toRow (Message i cont uf ut) = toRow (i, cont, uf, ut)

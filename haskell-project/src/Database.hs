@@ -2,7 +2,8 @@
 
 module Database (
     initialiseDB,
-    saveMessage
+    saveMessage,
+    selectAllMessages
 ) where
 
 import Types
@@ -23,7 +24,12 @@ initialiseDB = do
 
 saveMessage :: Connection -> Message -> IO ()
 saveMessage conn message = do
-    let userFromID = userID (userFrom message)
-    let userToID = userID (userTo message)
+    let userFromID = userFrom message
+    let userToID = userTo message
     let msg = msgContent message
     execute conn "INSERT INTO messages (content, userFrom, userTo) VALUES (?, ?, ?)" (msg, userFromID, userToID)
+
+selectAllMessages :: Connection -> IO Int
+selectAllMessages conn = do
+    results <- query_ conn "SELECT * FROM messages" :: IO [Message]
+    return (length results)
