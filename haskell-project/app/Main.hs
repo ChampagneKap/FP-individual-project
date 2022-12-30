@@ -1,6 +1,6 @@
 {-|
 Module      : Main
-Description : This module includes all the main functions of this app
+Description : This module includes all the main functions of this program
 -}
 module Main (
     -- * Function
