@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveGeneric #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-comment">{-|
+Module      : Types
+Description : This module includes all the type definitions required throughout the program
+-}</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Types</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-8"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Types</span></span><span>
+</span><span id="line-9"></span><span>    </span><span class="annot"><a href="Types.html#User"><span class="hs-identifier">User</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>    </span><span class="annot"><a href="Types.html#Message"><span class="hs-identifier">Message</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Database.SQLite.Simple.FromRow</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Database.SQLite.Simple.ToRow</span></span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-comment">-- | This is the data structure that will represent a User</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">data</span><span> </span><span id="User"><span class="annot"><a href="Types.html#User"><span class="hs-identifier hs-var">User</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="User"><span class="annot"><a href="Types.html#User"><span class="hs-identifier hs-var">User</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-comment">-- | The 'userID' method returns the id by which a user is indexed</span><span>
+</span><span id="line-19"></span><span>    </span><span id="userID"><span class="annot"><span class="annottext">User -&gt; Int
+</span><a href="Types.html#userID"><span class="hs-identifier hs-var hs-var">userID</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span>    </span><span class="hs-comment">-- | The 'firstName' method returns the first name of a user</span><span>
+</span><span id="line-21"></span><span>    </span><span id="firstName"><span class="annot"><span class="annottext">User -&gt; String
+</span><a href="Types.html#firstName"><span class="hs-identifier hs-var hs-var">firstName</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-comment">-- | The 'lastName' method returns the last name of a user</span><span>
+</span><span id="line-23"></span><span>    </span><span id="lastName"><span class="annot"><span class="annottext">User -&gt; String
+</span><a href="Types.html#lastName"><span class="hs-identifier hs-var hs-var">lastName</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-24"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679044289"><span id="local-6989586621679044291"><span id="local-6989586621679044301"><span class="annot"><span class="annottext">Int -&gt; User -&gt; ShowS
+[User] -&gt; ShowS
+User -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [User] -&gt; ShowS
+$cshowList :: [User] -&gt; ShowS
+show :: User -&gt; String
+$cshow :: User -&gt; String
+showsPrec :: Int -&gt; User -&gt; ShowS
+$cshowsPrec :: Int -&gt; User -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679044277"><span id="local-6989586621679044285"><span class="annot"><span class="annottext">User -&gt; User -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: User -&gt; User -&gt; Bool
+$c/= :: User -&gt; User -&gt; Bool
+== :: User -&gt; User -&gt; Bool
+$c== :: User -&gt; User -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-comment">-- | This is the data structure that will represent a Message entry</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">data</span><span> </span><span id="Message"><span class="annot"><a href="Types.html#Message"><span class="hs-identifier hs-var">Message</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Message"><span class="annot"><a href="Types.html#Message"><span class="hs-identifier hs-var">Message</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-comment">-- | The 'msgID' method returns the id of a message</span><span>
+</span><span id="line-29"></span><span>    </span><span id="msgID"><span class="annot"><span class="annottext">Message -&gt; Int
+</span><a href="Types.html#msgID"><span class="hs-identifier hs-var hs-var">msgID</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-comment">-- | The 'msgContent' method returns the content of a message</span><span>
+</span><span id="line-31"></span><span>    </span><span id="msgContent"><span class="annot"><span class="annottext">Message -&gt; String
+</span><a href="Types.html#msgContent"><span class="hs-identifier hs-var hs-var">msgContent</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-comment">-- | The 'userFrom' method returns the user a message was sent from</span><span>
+</span><span id="line-33"></span><span>    </span><span id="userFrom"><span class="annot"><span class="annottext">Message -&gt; Int
+</span><a href="Types.html#userFrom"><span class="hs-identifier hs-var hs-var">userFrom</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-comment">-- | The 'userTo' method returns the user a message was sent to</span><span>
+</span><span id="line-35"></span><span>    </span><span id="userTo"><span class="annot"><span class="annottext">Message -&gt; Int
+</span><a href="Types.html#userTo"><span class="hs-identifier hs-var hs-var">userTo</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-36"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679044258"><span id="local-6989586621679044260"><span id="local-6989586621679044268"><span class="annot"><span class="annottext">Int -&gt; Message -&gt; ShowS
+[Message] -&gt; ShowS
+Message -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Message] -&gt; ShowS
+$cshowList :: [Message] -&gt; ShowS
+show :: Message -&gt; String
+$cshow :: Message -&gt; String
+showsPrec :: Int -&gt; Message -&gt; ShowS
+$cshowsPrec :: Int -&gt; Message -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679044249"><span id="local-6989586621679044256"><span class="annot"><span class="annottext">Message -&gt; Message -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Message -&gt; Message -&gt; Bool
+$c/= :: Message -&gt; Message -&gt; Bool
+== :: Message -&gt; Message -&gt; Bool
+$c== :: Message -&gt; Message -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-comment">{-- Making Message an instance of FromRow and ToRow type classes --}</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- | Defining Message as an instance of FromRow</span><span>
+</span><span id="line-41"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FromRow</span></span><span> </span><span class="annot"><a href="Types.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-42"></span><span>    </span><span id="local-6989586621679044233"><span class="annot"><span class="annottext">fromRow :: RowParser Message
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromRow</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String -&gt; Int -&gt; Int -&gt; Message
+</span><a href="Types.html#Message"><span class="hs-identifier hs-var">Message</span></a></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall a. FromField a =&gt; RowParser a
+</span><span class="hs-identifier hs-var">field</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall a. FromField a =&gt; RowParser a
+</span><span class="hs-identifier hs-var">field</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall a. FromField a =&gt; RowParser a
+</span><span class="hs-identifier hs-var">field</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall a. FromField a =&gt; RowParser a
+</span><span class="hs-identifier hs-var">field</span></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="hs-comment">-- | Defining Message as an instance of ToRow</span><span>
+</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToRow</span></span><span> </span><span class="annot"><a href="Types.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-46"></span><span>    </span><span id="local-6989586621679044218"><span class="annot"><span class="annottext">toRow :: Message -&gt; [SQLData]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toRow</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Types.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span> </span><span id="local-6989586621679044216"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044216"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679044215"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679044215"><span class="hs-identifier hs-var">cont</span></a></span></span><span> </span><span id="local-6989586621679044214"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044214"><span class="hs-identifier hs-var">uf</span></a></span></span><span> </span><span id="local-6989586621679044213"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044213"><span class="hs-identifier hs-var">ut</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a. ToRow a =&gt; a -&gt; [SQLData]
+</span><span class="hs-identifier hs-var">toRow</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044216"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679044215"><span class="hs-identifier hs-var">cont</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044214"><span class="hs-identifier hs-var">uf</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044213"><span class="hs-identifier hs-var">ut</span></a></span><span class="hs-special">)</span></pre></body></html>
