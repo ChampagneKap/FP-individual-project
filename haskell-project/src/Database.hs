@@ -52,16 +52,15 @@ selectAllMessagesByUser conn user = do
     let numOfSentMsgs = length sentResults
     receivedResults <- query conn "SELECT * FROM messages WHERE userTo = ?" [receivingUser] :: IO [Message]
     let numOfReceivedMsgs = length receivedResults
-    putStrLn "------------------------------"
     putStrLn ("User " ++ show receivingUser ++ " sent " ++ show numOfSentMsgs ++ " messages.")
-    putStrLn ("User " ++ show receivingUser ++ " received " ++ show numOfReceivedMsgs ++ " messages.")
-    putStrLn "------------------------------"
+    if userID user < 10 then
+        putStrLn ("User " ++ show receivingUser ++ " received " ++ show numOfReceivedMsgs ++ " messages.\n")
+    else
+        putStrLn ("User " ++ show receivingUser ++ " received " ++ show numOfReceivedMsgs ++ " messages.")
 
 -- |The 'selectEachMessageSent' function gets the count of each given message and displays it to the program user
 selectEachMessageSent :: Connection -> String -> IO ()
 selectEachMessageSent conn msg = do
     results <- query conn "SELECT * FROM messages WHERE content = ?" [msg] :: IO [Message]
     let numOfMsgs = length results
-    putStrLn "------------------------------"
-    putStrLn ("The message " ++  msg ++ " was sent " ++ show numOfMsgs ++ " times.")
-    putStrLn "------------------------------"
+    putStrLn ("The message \"" ++  msg ++ "\" was sent " ++ show numOfMsgs ++ " times.")
