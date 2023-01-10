@@ -29,9 +29,9 @@ data Message = Message {
     msgID :: Int,
     -- | The 'msgContent' method returns the content of a message
     msgContent :: String,
-    -- | The 'userFrom' method returns the user a message was sent from
+    -- | The 'userFrom' method returns the id of the user a message was sent from
     userFrom :: Int,
-    -- | The 'userTo' method returns the user a message was sent to
+    -- | The 'userTo' method returns the id of the user a message was sent to
     userTo :: Int
 } deriving (Show, Eq)
 
