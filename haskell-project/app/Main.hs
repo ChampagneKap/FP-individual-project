@@ -78,6 +78,7 @@ main = do
     conn <- initialiseDB
     let users = map createUser [1..10]
     msgsSent <- newEmptyMVar
+    -- Storing a basic message within the MVar to prevent deadlocks between threads
     msgBox <- newMVar (Message 0 "hi" 0 0)
     mapM_ (spawnUserThreads conn msgsSent msgBox users) users
     allMsgsSent <- takeMVar msgsSent
